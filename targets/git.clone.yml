@@ -1,0 +1,93 @@
+kind: shell
+spec:
+  - git
+  - clone
+  - name: template
+    type: option
+    optional: true
+  - name: local
+    type: option
+    optional: true
+  - name: no-hardlinks
+    type: option
+    optional: true
+  - name: shared
+    type: option
+    optional: true
+  - name: reference
+    type: option
+    optional: true
+  - name: reference-if-able
+    type: option
+    optional: true
+  - name: dissociate 
+    type: option
+    optional: true
+  - name: quiet 
+    type: option
+    optional: true
+  - name: verbose
+    type: option
+    optional: true
+  - name: progress
+    type: option
+    optional: true
+  - name: no-checkout
+    type: option
+    optional: true
+  - name: bare
+    type: option
+    optional: true
+  - name: mirror
+    type: option
+    optional: true
+  - name: origin
+    type: option
+    optional: true
+  - name: branch
+    type: option
+    optional: true
+  - name: upload-pack
+    type: option
+    optional: true
+  - name: config
+    type: option
+    optional: true
+  - name: depth
+    type: option
+    optional: true
+    useValue: true
+  - name: shallow-since
+    type: option
+    optional: true
+  - name: shallow-exclude
+    type: option
+    optional: true
+  - name: single-branch
+    type: option
+    optional: true
+  - name: no-single-branch
+    type: option
+    optional: true
+  - name: no-tags
+    type: option
+    optional: true
+  - name: recurse-submodules
+    type: option
+    optional: true
+  - name: shallow-submodules
+    type: option
+    optional: true
+  - name: no-shallow-submodules
+    type: option
+    optional: true
+  - name: separate-git-dir
+    type: option
+    optional: true
+  - name: jobs
+    type: option
+    optional: true
+  - name: repository
+    type: value
+  - name: directory
+    type: value

@@ -1,0 +1,8 @@
+kind: prompts
+spec:
+  - name: refspec
+    message: 'what refspec do you want to deploy?'
+    default: 'master'
+  - name: directory
+    message: 'where do you want to clone to?'
+    default: '/tmp/foo'

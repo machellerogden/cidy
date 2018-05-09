@@ -1,0 +1,4 @@
+git:
+  clone:
+    depth: 1
+    single-branch: true
