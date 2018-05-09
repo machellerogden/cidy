@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source <(curl -sS -H 'Accept: application/vnd.github.v3.raw' -L https://raw.githubusercontent.com/machellerogden/g4b/0.0.1/g4b)
+load_src ./lib/env
+load_specs ./lib/env.spec
+load_specs ./lib/deploy.spec

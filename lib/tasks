@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+source "$GD_DIR/lib/deploy"
+
+init-deploy
+
+build() {
+    docker-build
+}
+
+publish() {
+    docker-tag
+    docker-push
+}
+
+publish-injected() {
+    fetch-secrets
+    docker-inject-secrets
+    docker-push
+}
+
+set-deployment() {
+    confirm "Prepared to deploy to $ENV_KEY in kubernetes."
+    notify-deploy
+    k8s-set-image
+}
+
+notify-deploy() {
+    execute "Notifying HipChat" ./bin/hipchat -f TransferSafe "Deploying TransferSafe to $ENV_KEY ($(whoami))..."
+}
+
+apply-deployment() {
+    confirm "Prepared to deploy to $ENV_KEY in kubernetes."
+    notify-deploy
+    k8s-patch-deployment
+    k8s-apply-deployment
+}
+
+cutover() {
+    k8s-cutover
+}
+
+jenkins-testing() {
+    clone
+    build
+    publish
+}
+
+deploy() {
+    clone
+    build
+    publish
+    publish-injected
+    set-deployment
+}
+
+full-deploy() {
+    clone
+    build
+    publish
+    publish-injected
+    apply-deployment
+}

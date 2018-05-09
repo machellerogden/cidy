@@ -1,0 +1,208 @@
+#!/usr/bin/env bash
+source "$GD_DIR/lib/env"
+source "$GD_DIR/lib/util"
+
+# library of build/deploy functions
+
+init-deploy() {
+    local required_vars=(
+        DOCKER_REGISTRY
+        DOCKER_IMAGE_NAME
+        DOCKER_IMAGE_TAG
+        K8S_SERVICE_FILE
+        K8S_DEPLOYMENT_FILE
+        K8S_DEPLOYMENT_NAME
+        K8S_CONTEXT
+        K8S_NAMESPACE
+        AWS_PROFILE
+        S3_SECRETS
+    )
+
+    set-target-dir
+    init-env
+    select-build
+    set-docker-image-tag
+
+    [ -z "$INITIALIZED" ] && export INITIALIZED=1 || true
+
+    validate-env-vars "${required_vars[@]}"
+}
+
+set-docker-image-tag() {
+    [ -n "$DOCKER_IMAGE_TAG" ] && return 0 || true
+    export DOCKER_IMAGE_TAG="$DOCKER_IMAGE_NAME:$(get-version)"
+}
+
+select-build() {
+    [ -n "$REFSPEC" ] && return 0 || true
+    if [ -n "$NO_CHECKOUT" ]; then
+        export REFSPEC="$(whoami)-working-dir"
+        return 0
+    fi
+    print-prompt "What do you want to build?\n"
+    local top_options=("tag" "branch")
+    local code=1
+    local top_opt
+    select top_opt in "${top_options[@]}"
+    do
+        case ${top_opt} in
+            "branch")
+                echo
+                print-prompt "Select branch:\n"
+                options=( $(git for-each-ref --sort=-committerdate --format '%(refname:short)' refs/heads/) )
+                select opt in "${options[@]}"
+                do
+                    REFSPEC=$opt
+                    echo
+                    print-info "Refspec: $REFSPEC"
+                    echo
+                    return 0
+                done
+                ;;
+            "tag")
+                echo
+                print-prompt "Select tag:\n"
+                options=( $(git tag --list --sort=-taggerdate) )
+                select opt in "${options[@]}"
+                do
+                    REFSPEC="$opt"
+                    echo
+                    print-info "Refspec: $REFSPEC"
+                    echo
+                    return 0
+                done
+                ;;
+        esac
+    done
+}
+
+get-version() {
+    local suffix
+    if [ -n "$SNAPSHOT" ]; then
+        suffix="-$(date +%s)"
+    fi
+    if [ -n "$CI" ]; then
+        echo -n "$(git rev-parse HEAD)${suffix}"
+        return 0
+    fi
+    if [ -n "$NO_CHECKOUT" ]; then
+        echo -n "${REFSPEC}${suffix}"
+        return 0
+    fi
+    [ -z "$REFSPEC" ] && return 0 || echo -n "$(git rev-parse "$REFSPEC")${suffix}"
+}
+
+docker-build() {
+    aws-ecr-login
+    SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)"
+    REDACTIONS+=( "SSH_PRIVATE_KEY" )
+    execute "Building docker image" docker build -f "$TARGET_DIR/Dockerfile" -t "$DOCKER_IMAGE_TAG" --build-arg SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" "$TARGET_DIR"
+}
+
+docker-tag() {
+    execute "Tagging docker image" docker tag "$DOCKER_IMAGE_TAG" "${DOCKER_REGISTRY}/${DOCKER_IMAGE_TAG}"
+}
+
+docker-push() {
+    aws-ecr-login
+    execute "Pushing docker image: ${DOCKER_REGISTRY}/${DOCKER_IMAGE_TAG}" docker push "${DOCKER_REGISTRY}/${DOCKER_IMAGE_TAG}"
+}
+
+docker-inject-secrets() {
+    aws-ecr-login
+    local cmd
+    if [ -z "$DRYRUN" ]; then
+        TRANSIENT_CONTAINER="$(docker run -d "${DOCKER_REGISTRY}/${DOCKER_IMAGE_TAG}" bash -c 'while :; do sleep 1; done')"
+    else
+        TRANSIENT_CONTAINER="1234567890"
+    fi
+    cmd="$(cat "$TARGET_DIR/Dockerfile" | grep '^CMD' | tr -d '\n\r')"
+    if [ "$?" -eq 0 ] && [ -n "$TRANSIENT_CONTAINER" ]; then
+        execute "Copying secrets into transient container" docker cp "$TARGET_DIR/config/secrets.$ENV_KEY.env" "$TRANSIENT_CONTAINER:/src/config/secrets.$ENV_KEY.env" \
+            && execute "Committing transient container" docker commit -c "$cmd" "$TRANSIENT_CONTAINER" "${DOCKER_REGISTRY}/${DOCKER_IMAGE_TAG}-${ENV_KEY}" \
+            && execute "Killing transient container" docker kill "$TRANSIENT_CONTAINER" \
+            && export DOCKER_IMAGE_TAG="${DOCKER_IMAGE_TAG}-${ENV_KEY}" \
+            || print-error "Error while injecting secrets"
+    else
+        print-error "Error running transient container"
+    fi
+}
+
+set-aws-ecr-auth-token() {
+    if [ -n "$DRYRUN" ]; then
+        export AWS_ECR_AUTH_TOKEN="dryrundryrundryrundryrundryrundryrundryrundryrundryrundryrundryrundryrun"
+    else
+        export AWS_ECR_AUTH_TOKEN="$(aws --profile="$AWS_PROFILE" --region us-east-1 ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 --decode | cut -d: -f2)"
+    fi
+    if [ -z "$AWS_ECR_AUTH_TOKEN" ]; then
+        print-error "Problem setting AWS_ECR_AUTH_TOKEN"
+        return 1
+    fi
+    REDACTIONS+=( "AWS_ECR_AUTH_TOKEN" )
+}
+
+aws-ecr-login() {
+    set-aws-ecr-auth-token
+    execute "Logging in to docker registry: $DOCKER_REGISTRY" docker login -u AWS -p "$AWS_ECR_AUTH_TOKEN" "https://$DOCKER_REGISTRY"
+}
+
+k8s-get-deployment() {
+    local deployment_name="${1:-"$K8S_DEPLOYMENT_NAME"}"
+    execute "Getting $deployment_name" kubectl --context="$K8S_CONTEXT" --namespace="$K8S_NAMESPACE" get deployment "$deployment_name"
+}
+
+k8s-create-deployment() {
+    k8s-get-deployment
+    if [ "$?" -eq 0 ]; then
+        execute "Creating k8s deployment" kubectl --context="$K8S_CONTEXT" --namespace="$K8S_NAMESPACE" create -f "$TARGET_DIR/$K8S_DEPLOYMENT_FILE"
+    fi
+}
+
+k8s-apply-deployment() {
+    execute "Applying k8s deployment" kubectl --context="$K8S_CONTEXT" --namespace="$K8S_NAMESPACE" apply -f "$TARGET_DIR/$K8S_DEPLOYMENT_FILE"
+}
+
+k8s-apply-service() {
+    execute "Applying k8s service" kubectl --context="$K8S_CONTEXT" --namespace="$K8S_NAMESPACE" apply -f "$TARGET_DIR/$K8S_SERVICE_FILE"
+}
+
+k8s-patch-deployment() {
+    local patch_dest dest
+    patch_dest="$TARGET_DIR/deployment-patch.yml"
+    dest="$TARGET_DIR/$K8S_DEPLOYMENT_FILE"
+    if [ -z "$DRYRUN" ]; then
+        kubectl --context="$K8S_CONTEXT" --namespace="$K8S_NAMESPACE" patch -f "$dest" --local -o yaml \
+            -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"$K8S_DEPLOYMENT_NAME\",\"image\":\"${DOCKER_REGISTRY}/${DOCKER_IMAGE_TAG}\"}]}}}}" \
+            >"$patch_dest"
+        if [ $? -ne 0 ]; then
+            print-error "Patching Deployment image failed"
+            exit 1
+        fi
+        mv "$patch_dest" "$dest"
+        print-info "Patched deployment file"
+    else
+        print-info "Would patch deployment file"
+    fi
+}
+
+k8s-set-image() {
+    execute "Setting deployment image for $K8S_DEPLOYMENT_NAME to ${DOCKER_REGISTRY}/${DOCKER_IMAGE_TAG}" kubectl --context="$K8S_CONTEXT" --namespace="$K8S_NAMESPACE" set image "deployment/$K8S_DEPLOYMENT_NAME" "$K8S_DEPLOYMENT_NAME=${DOCKER_REGISTRY}/${DOCKER_IMAGE_TAG}"
+}
+
+clone() {
+    [ -n "$NO_CHECKOUT" ] && return 0 || true
+    execute "Cloning repo to $TARGET_DIR" git clone --depth 1 "$REPO_URL" --branch "$REFSPEC" --single-branch "$TARGET_DIR"
+    if [ "$?" -ne 0 ]; then
+        print-error "Failed to clone repo from $REPO_URL"
+        exit 1
+    fi
+}
+
+fetch-secrets() {
+    local dest="$TARGET_DIR/config/secrets.$ENV_KEY.env"
+    execute "Fetching secrets from s3" aws --profile="$AWS_PROFILE" s3 cp "$S3_SECRETS" "$dest"
+    if [ -z "$DRYRUN" ] && [ ! -f "$dest" ]; then
+        print-error "Failed to copy secrets from $S3_SECRETS to $dest"
+        exit 1
+    fi
+}

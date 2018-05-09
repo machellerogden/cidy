@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# global positional args are dangerous... this moves them to a named array
+export ARGS=( "$@" )
+while (( "$#" )); do shift; done

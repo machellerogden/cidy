@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+source "$GD_DIR/lib/symbols"
+
+print-info() {
+    printf "   %b%b%b  $1\n" "$COLOR_BLUE" "$SYMBOL_DOTS" "$COLOR_RESET"
+}
+
+print-warning() {
+    printf "   %b%b%b  $1\n" "$COLOR_YELLOW" "$SYMBOL_FROWN" "$COLOR_RESET"
+}
+
+print-special() {
+    printf "   %b%b%b  $1\n" "$COLOR_GREEN" "$SYMBOL_STAR" "$COLOR_RESET"
+}
+
+print-error() {
+    printf "   %b%b%b  $1\n" "$COLOR_RED" "$SYMBOL_XMARK" "$COLOR_RESET"
+}
+
+print-fatal() {
+    printf "   %b%b%b  $1\n" "$COLOR_RED" "$SYMBOL_SKULL" "$COLOR_RESET"
+}
+
+print-success() {
+    printf "   %b%b%b  $1\n" "$COLOR_GREEN" "$SYMBOL_CHECKMARK" "$COLOR_RESET"
+}
+
+print-prompt() {
+    printf "\r   %b?  $1%b" "$COLOR_YELLOW" "$COLOR_RESET"
+}
+
+export VERBOSE=${VERBOSE:-true} # defaulting to true until we're so overwhelmingly confident that all of this is working that we don't need to see much output
+export DRYRUN
+export SNAPSHOT
+export NO_CONFIRM
+export REDACTIONS=()
+
+set-target-dir() {
+    if [ -n "$TARGET_DIR" ]; then
+        return 0
+    fi
+    export REPO_URL="$(git config --get remote.origin.url)"
+    export BASE_NAME="$(basename -s .git "$REPO_URL")"
+    if [ -n "$NO_CHECKOUT" ]; then
+        export TARGET_DIR="$ENTRY_DIR"
+        return 0
+    fi
+    if [ -n "$TARGET_DIR" ] && ! [ -d "$TARGET_DIR" ]; then
+        return 1
+    fi
+    if [ -z "$DRYRUN" ]; then
+        export TARGET_DIR="$(mktemp -d "/tmp/$BASE_NAME.XXXXXXXXXXXX" 2>/dev/null || mktemp -d -t /tmp)"
+    else
+        export TARGET_DIR="/tmp/$BASE_NAME.XXXXXXXXXXXX"
+    fi
+    echo "TARGET_DIR: $TARGET_DIR"
+}
+
+redact() {
+    tr -d '\n\r' | perl -pe 's/'"$(echo "${!1}" | tr -d '\n\r' | perl -pe 's/([\/\ \.\^\$\*\+\-\?\(\)\[\]\{\}\\\|])/\\\1/g')"'/'${COLOR_RESET}${COLOR_YELLOW}'**redacted**'${COLOR_RESET}${COLOR_FADED}'/g'
+}
+
+report-exec() {
+    local pid=$!
+    local symbol
+    local code
+    local ulc="\xe2\x97\x9c"
+    local urc="\xe2\x97\x9d"
+    local lrc="\xe2\x97\x9e"
+    local llc="\xe2\x97\x9f"
+    local i=0
+    while kill -0 $pid 2>/dev/null; do
+        i=$(( (i+1) %4 ))
+        [ "$i" -eq 0 ] && symbol=$ulc
+        [ "$i" -eq 1 ] && symbol=$urc
+        [ "$i" -eq 2 ] && symbol=$lrc
+        [ "$i" -eq 3 ] && symbol=$llc
+        printf "\r %b %b%b%b  $1%b :: %b$2" $symbol "$COLOR_BLUE" "$SYMBOL_RIGHTARROW" "$COLOR_RESET" "$COLOR_FADED" "$COLOR_RESET"
+        sleep .1
+    done
+    printf "\r  "
+    wait $pid
+    code=$?
+    if [ "$code" -ne 0 ]; then
+        printf "\r   %b%b%b  $1%b :: %b$2" "$COLOR_RED" "$SYMBOL_XMARK" "$COLOR_RESET" "$COLOR_FADED" "$COLOR_RESET"
+    else
+        printf "\r   %b%b%b  $1%b :: %b$2" "$COLOR_GREEN" "$SYMBOL_CHECKMARK" "$COLOR_RESET" "$COLOR_FADED" "$COLOR_RESET"
+    fi
+    echo
+    return $code
+}
+
+execute() {
+    local msg cmd cmd_str
+    if [ "${#@}" -lt 2 ]; then
+        print-error "execute requires at least two arguments"
+        return 1
+    fi
+    msg="$1"
+    shift
+    cmd_str="$*"
+    cmd=( "${@}" )
+    for redaction in ${REDACTIONS[@]}; do
+        cmd_str="${COLOR_FADED}$(echo "$cmd_str" | redact "${redaction}")${COLOR_RESET}"
+    done
+    if [ -n "$DRYRUN" ]; then
+        print-info "Would execute: $cmd_str"
+    elif [ -n "$VERBOSE" ]; then
+        print-info "Executing: $cmd_str"
+        "${cmd[@]}"
+    else
+       "${cmd[@]}" >/dev/null 2>&1 & report-exec "$msg" "$cmd_str"
+    fi
+}
+
+confirm() {
+    echo
+    [ -n "$1" ] && print-info "$1"
+    if [ -n "$NO_CONFIRM" ]; then
+        return 0
+    fi
+    if [ -n "$DRYRUN" ]; then
+        print-prompt "Would ask: \"Ready to proceed? (y/n)? \""
+        echo
+        echo
+    else
+        print-prompt "Ready to proceed? (y/n)? "
+        read  choice
+        case "$choice" in
+          y|Y)
+              echo
+              print-info "Running..."
+              ;;
+          n|N)
+              echo
+              print-error "Aborting!"
+              exit 1
+              ;;
+          *)
+              print-error "Must enter 'y' to proceed. Aborting!"
+              exit 1
+              ;;
+        esac
+        echo
+    fi
+}
+
+clean-target() {
+    if [ -n "$NO_CHECKOUT" ]; then
+        return 0
+    fi
+    if [ -n "$DRYRUN" ] || ( [ -n "$TARGET_DIR" ] && [ -d "$TARGET_DIR" ] ) && execute "Cleaning up..." rm -rf "$TARGET_DIR"; then
+        [ -z "$DRYRUN" ] && print-success "Successfully removed $TARGET_DIR" || true
+    else
+        print-error "There was a problem removing $TARGET_DIR. Please check to see if you need to remove it manually."
+    fi
+}
+
+error-trap() {
+    local code=$?
+    local frame=0
+    local callstack=$(caller)
+    local callstack_lineno=$(echo "$callstack" | awk '{print $1}')
+    local callstack_file=$(echo "$callstack" | awk '{print $2}')
+    local message="$1"
+    echo
+    print-fatal "Something went wrong..."
+    printf "\n%bError on line %d of %s\n" "$COLOR_RED" $callstack_lineno $callstack_file
+    if [[ -n "$message" ]] ; then
+        printf "%bMessage: %s; exiting with status %d%b\n\n" "$COLOR_RED" "$message" $code "$COLOR_RESET"
+    else
+        printf "%bExiting with status %d%b\n" "$COLOR_RED" $code "$COLOR_RESET"
+    fi
+
+    msg+="$COLOR_RESET\n    Call stack:"
+    while $(caller $frame > /dev/null 2>&1); do
+        msg+="\n      $(caller $frame)"
+        ((frame++));
+    done
+    printf "%b%b\n\n" "$msg" "$COLOR_RESET"
+
+    clean-target
+
+    echo
+    echo
+
+    exit $code
+}
+
+exit-trap() {
+    local code=$?
+
+    clean-target
+
+    echo
+    if [ $code -ne 0 ]; then
+        print-error "If my goal was to fail, and I failed, did I succeed or fail?"
+    fi
+
+    exit $code
+}
+
+set-traps() {
+    set -e
+    set -o pipefail
+    set -o errtrace
+    [ -z "$(trap -p ERR)" ] && trap error-trap ERR
+    [ -z "$(trap -p EXIT)" ] && trap exit-trap EXIT
+}
+

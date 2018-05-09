@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ "$(readlink "$0")" == "" ]; then
+    pushd `dirname $0` > /dev/null
+    export GD_DIR=`pwd -P | xargs dirname`
+    popd > /dev/null
+else
+    export GD_DIR=$(readlink "$0" | xargs dirname | xargs dirname)
+fi
+export ENTRY_DIR=$(pwd)
