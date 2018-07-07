@@ -1,5 +1,7 @@
 'use strict';
 
+module.exports = build;
+
 const requireDir = require('require-dir');
 const { toArgs } = requireDir('../lib');
 
@@ -273,4 +275,3 @@ build.prompts = [
     }
 ];
 
-module.exports = build;
