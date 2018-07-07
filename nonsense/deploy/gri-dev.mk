@@ -1,2 +1,0 @@
-FOOOOOO=bar
-FOOOO=bar
