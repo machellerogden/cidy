@@ -65,212 +65,207 @@ build.label = 'Docker Build';
 build.prompts = [
     {
         type: 'input',
-        name: 'registry',
-        message: '`registry` portion of the ‘registry/name:tag’ format',
-        optional: true
-    },
-    {
-        type: 'input',
         name: 'name',
-        message: '`name` portion of the ‘registry/name:tag’ format'
+        message: '`name` portion of the ‘registry/name:tag’ format:'
     },
     {
         type: 'input',
         name: 'tag',
-        message: '`tag` portion of the ‘registry/name:tag’ format',
+        message: '`tag` portion of the ‘registry/name:tag’ format:',
         optional: true
     },
     {
         type: 'input',
-        name: 'tag',
-        message: 'Name and optionally a tag in the ‘name:tag’ format'
+        name: 'registry',
+        message: '`registry` portion of the ‘registry/name:tag’ format:',
+        optional: true
     },
     {
         type: 'input',
         name: 'context',
-        message: 'Build context',
+        message: 'Build context:',
         optional: true,
         default: '.'
     },
     {
         type: 'input',
         name: 'file',
-        message: 'Name of the Dockerfile (Default is ‘PATH/Dockerfile’)',
+        message: 'Name of the Dockerfile (Default is ‘PATH/Dockerfile’):',
         optional: true
     },
     {
         type: 'editor',
         name: 'add-host',
-        message: 'add other hosts into a container’s /etc/hosts',
+        message: 'add other hosts into a container’s /etc/hosts:',
         optional: true
     },
     {
         type: 'editor',
         name: 'build-arg',
-        message: 'Set build-time variables (leave blank for none or add one build-arg per line)',
+        message: 'Set build-time variables (leave blank for none or add one build-arg per line):',
         optional: true
     },
     {
         type: 'editor',
         name: 'cache-from',
-        message: 'Images to consider as cache sources',
+        message: 'Images to consider as cache sources:',
         optional: true
     },
     {
         type: 'input',
         name: 'cgroup-parent',
-        message: 'Optional parent cgroup for the container',
+        message: 'Optional parent cgroup for the container:',
         optional: true
     },
     {
         type: 'confirm',
         name: 'compress',
-        message: 'Compress the build context using gzip',
+        message: 'Compress the build context using gzip:',
         optional: true
     },
     {
         type: 'input',
         name: 'cpu-period',
-        message: 'Limit the CPU CFS (Completely Fair Scheduler) period',
+        message: 'Limit the CPU CFS (Completely Fair Scheduler) period:',
         optional: true
     },
     {
         type: 'input',
         name: 'cpu-quota',
-        message: 'Limit the CPU CFS (Completely Fair Scheduler) quota',
+        message: 'Limit the CPU CFS (Completely Fair Scheduler) quota:',
         optional: true
     },
     {
         type: 'input',
         name: 'cpu-shares',
-        message: 'CPU shares (relative weight)',
+        message: 'CPU shares (relative weight):',
         optional: true
     },
     {
         type: 'input',
         name: 'cpuset-cpus',
-        message: 'CPUs in which to allow execution (0-3, 0,1)',
+        message: 'CPUs in which to allow execution (0-3, 0,1):',
         optional: true
     },
     {
         type: 'input',
         name: 'cpuset-mems',
-        message: 'MEMs in which to allow execution (0-3, 0,1)',
+        message: 'MEMs in which to allow execution (0-3, 0,1):',
         optional: true
     },
     {
         type: 'confirm',
         name: 'disable-content-trust',
-        message: 'Skip image verification',
+        message: 'Skip image verification:',
         default: true,
         optional: true
     },
     {
         type: 'input',
         name: 'force-rm',
-        message: 'Always remove intermediate containers',
+        message: 'Always remove intermediate containers:',
         optional: true
     },
     {
         type: 'input',
         name: 'iidfile',
-        message: 'Write the image ID to the file',
+        message: 'Write the image ID to the file:',
         optional: true
     },
     {
         type: 'input',
         name: 'isolation',
-        message: 'Container isolation technology',
+        message: 'Container isolation technology:',
         optional: true
     },
     {
         type: 'input',
         name: 'label',
-        message: 'Set metadata for an image',
+        message: 'Set metadata for an image:',
         optional: true
     },
     {
         type: 'input',
         name: 'memory',
-        message: 'Memory limit',
+        message: 'Memory limit:',
         optional: true
     },
     {
         type: 'input',
         name: 'memory-swap',
-        message: 'Swap limit equal to memory plus swap: ‘-1’ to enable unlimited swap',
+        message: 'Swap limit equal to memory plus swap: ‘-1’ to enable unlimited swap:',
         optional: true
     },
     {
         type: 'input',
         name: 'network',
-        message: 'Set the networking mode for the RUN instructions during build',
+        message: 'Set the networking mode for the RUN instructions during build:',
         optional: true
     },
     {
         type: 'input',
         name: 'no-cache',
-        message: 'Do not use cache when building the image',
+        message: 'Do not use cache when building the image:',
         optional: true
     },
     {
         type: 'input',
         name: 'platform',
-        message: 'Set platform if server is multi-platform capable',
+        message: 'Set platform if server is multi-platform capable:',
         optional: true
     },
     {
         type: 'input',
         name: 'pull',
-        message: 'Always attempt to pull a newer version of the image',
+        message: 'Always attempt to pull a newer version of the image:',
         optional: true
     },
     {
         type: 'input',
         name: 'quiet',
-        message: 'Suppress the build output and print image ID on success',
+        message: 'Suppress the build output and print image ID on success:',
         optional: true
     },
     {
         type: 'input',
         name: 'rm',
-        message: 'Remove intermediate containers after a successful build',
+        message: 'Remove intermediate containers after a successful build:',
         optional: true
     },
     {
         type: 'input',
         name: 'security-opt',
-        message: 'Security options',
+        message: 'Security options:',
         optional: true
     },
     {
         type: 'input',
         name: 'shm-size',
-        message: 'Size of /dev/shm',
+        message: 'Size of /dev/shm:',
         optional: true
     },
     {
         type: 'input',
         name: 'squash',
-        message: 'Squash newly built layers into a single new layer',
+        message: 'Squash newly built layers into a single new layer:',
         optional: true
     },
     {
         type: 'input',
         name: 'stream',
-        message: 'Stream attaches to server to negotiate build context',
+        message: 'Stream attaches to server to negotiate build context:',
         optional: true
     },
     {
         type: 'input',
         name: 'target',
-        message: 'Set the target build stage to build.',
+        message: 'Set the target build stage to build.:',
         optional: true
     },
     {
         type: 'input',
         name: 'ulimit',
-        message: 'Ulimit options',
+        message: 'Ulimit options:',
         optional: true
     }
 ];
