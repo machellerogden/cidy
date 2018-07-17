@@ -6,7 +6,7 @@ const requireDir = require('require-dir');
 const { toArgs } = requireDir('../lib');
 
 const path = require('path');
-const execa = require('execa');
+const { spawn } = require('child_process');
 const kebabCase = require('lodash/kebabCase');
 
 const optionals = [
@@ -57,7 +57,7 @@ function build(options, print) {
     ];
     const cmd = 'docker';
     print(`Running: ${cmd} ${args.join(' ')}`);
-    return execa('docker', args);
+    return spawn('docker', args);
 }
 
 build.label = 'Docker Build';

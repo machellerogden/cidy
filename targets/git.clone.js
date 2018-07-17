@@ -1,7 +1,7 @@
 'use strict';
 module.exports = clone;
 
-const Git = require('nodegit');
+const { spawn } = require('child_process');
 const path = require('path');
 
 function clone(options, print) {
@@ -9,10 +9,7 @@ function clone(options, print) {
         dest,
         url
     } = options;
-    return Git.Clone(url, path.resolve(dest))
-        .then((repository) => {
-             return repository.getBranchCommit('master').sha();
-        });
+    return spawn('git', [ 'clone', url, path.resolve(dest) ]);
 }
 
 clone.label = 'Git Clone';
@@ -20,12 +17,12 @@ clone.label = 'Git Clone';
 clone.prompts = [
     {
         type: 'input',
-        name: 'dest',
-        message: 'local path to clone repository to'
+        name: 'url',
+        message: 'clone url for remote repository'
     },
     {
         type: 'input',
-        name: 'url',
-        message: 'clone url for remote repository'
+        name: 'dest',
+        message: 'What directory would you like to clone to?'
     }
 ];
