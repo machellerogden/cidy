@@ -20,6 +20,6 @@
     "license": "Apache-2.0",
     "dependencies": {
         "require-dir": "^1.0.0",
-        "targets": "^1.0.0-rc3"
+        "targets": "^1.0.0-rc4"
     }
 }
