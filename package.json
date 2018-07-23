@@ -19,7 +19,9 @@
     "author": "Mac Heller-Ogden",
     "license": "Apache-2.0",
     "dependencies": {
+        "callsites": "^2.0.0",
         "require-dir": "^1.0.0",
-        "targets": "^1.0.0-rc4"
+        "targets": "^1.0.0-rc4",
+        "yamljs": "^0.3.0"
     }
 }
