@@ -1,0 +1,30 @@
+kind: shell
+spec:
+  - docker
+  - run
+  - name: d
+    type: flag
+    optional: true
+  - name: i
+    type: flag
+    optional: true
+  - name: t
+    type: flag
+    optional: true
+  - name: p
+    type: flag
+    optional: true
+  - name: tag
+    type: value
+    derived: true
+    template: "${registry ? `${registry}/` : ''}${name}:${version}"
+  - name: registry
+    type: variable
+  - name: name
+    type: variable
+  - name: version
+    default: latest
+    type: variable
+  - name: command
+    type: value
+    optional: true
