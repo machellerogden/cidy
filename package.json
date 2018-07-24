@@ -19,10 +19,13 @@
     "author": "Mac Heller-Ogden",
     "license": "Apache-2.0",
     "dependencies": {
+        "blessed": "^0.1.81",
+        "blessed-xterm": "^1.1.19",
         "callsites": "^2.0.0",
         "node-pty": "^0.7.6",
         "require-dir": "^1.0.0",
         "targets": "^1.0.0-rc4",
+        "term.js": "0.0.7",
         "yamljs": "^0.3.0"
     }
 }
