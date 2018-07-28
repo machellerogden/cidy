@@ -1,5 +1,5 @@
 kind: composition
-config: # this config is bound to this specific composition and will override all other config
+config:
   git:
     depth: 1
     single-branch: true
