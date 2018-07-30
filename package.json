@@ -22,6 +22,6 @@
     "author": "Mac Heller-Ogden",
     "license": "MIT",
     "dependencies": {
-        "targets": "^1.0.4"
+        "targets": "^1.0.5"
     }
 }

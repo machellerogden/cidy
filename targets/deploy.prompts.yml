@@ -1,8 +1,16 @@
 kind: prompts
 spec:
   - name: refspec
-    message: 'what refspec do you want to deploy?'
-    default: 'master'
+    type: list
+    message: what refspec do you want to deploy?
+    default: master
+    choices:
+        - master
+        - tag
+        - name: working directory
+          value: HEAD
+  - name: tag
+    when: refspec == "tag"
   - name: directory
-    message: 'where do you want to clone to?'
-    default: '/tmp/foo'
+    message: where do you want to clone to?
+    default: /tmp/foo
