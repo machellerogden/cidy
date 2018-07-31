@@ -1,0 +1,16 @@
+kind: composition
+config:
+  git:
+    depth: 1
+    single-branch: true
+spec:
+  - '@rebind/name::docker.name'
+  - deploy.select
+  - '@bind/deploy.select.refspec::git.branch'
+  - '@bind/deploy.select.directory::git.directory'
+  - '@bind/deploy.select.directory::docker.context'
+  - git.clone
+  - deploy.confirm
+  - '@bind/deploy.confirm.confirm::deploy.confirm'
+  - '@when/deploy.confirm::docker.build'
+  - docker.build
