@@ -12,5 +12,5 @@ spec:
   - '@bind/mktemp::docker.context'
   - git.clone
   - deploy.confirm
-  - '@when/deploy.confirm.ready::docker.build'
+  - '@when/deploy.confirm.ready::docker.build' # not a huge fan of this syntax ... needs further consideration
   - docker.build
