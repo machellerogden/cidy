@@ -1,0 +1,4 @@
+kind: composition
+spec:
+  - '@rebind/dark'
+  - deploy

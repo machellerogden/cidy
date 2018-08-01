@@ -1,0 +1,4 @@
+kind: composition
+spec:
+  - '@rebind/dev'
+  - deploy

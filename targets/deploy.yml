@@ -7,10 +7,10 @@ spec:
   - '@rebind/name::docker.name'
   - deploy.select
   - '@bind/deploy.select.refspec::git.branch'
-  - '@bind/deploy.select.directory::git.directory'
-  - '@bind/deploy.select.directory::docker.context'
+  - mktemp
+  - '@bind/mktemp::git.directory'
+  - '@bind/mktemp::docker.context'
   - git.clone
   - deploy.confirm
-  - '@bind/deploy.confirm.confirm::deploy.confirm'
-  - '@when/deploy.confirm::docker.build'
+  - '@when/deploy.confirm.ready::docker.build'
   - docker.build

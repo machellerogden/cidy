@@ -11,7 +11,5 @@ spec:
         - name: working directory
           value: HEAD
   - name: tag
+    message: please enter the git tag for the commit you wish to deploy.
     when: refspec == "tag"
-  - name: directory
-    message: where do you want to clone to?
-    default: /tmp/foo
