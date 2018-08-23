@@ -1,20 +1,20 @@
 kind: shell
 spec:
-  - docker
-  - push
-  - name: disable-content-trust
-    type: option
-    default: true
-    optional: true
-  - name: tag
-    type: value
-    derived: true
-    template: "${registry ? `${registry}/` : ''}${name}:${version}"
-  - name: registry
-    type: variable
-  - name: name
-    type: variable
-  - name: version
-    default: latest
-    type: variable
+- docker
+- push
+- name: disable-content-trust
+  argType: option
+  default: true
+  optional: true
+- name: tag
+  argType: value
+  derived: true
+  template: "${registry ? `${registry}/` : ''}${name}:${version}"
+- name: registry
+  argType: variable
+- name: name
+  argType: variable
+- name: version
+  default: latest
+  argType: variable
 

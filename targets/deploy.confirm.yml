@@ -1,6 +1,6 @@
 kind: prompt
 type: target
 spec:
-  - name: ready
-    type: confirm
-    message: ready to deploy?
+- name: ready
+  type: confirm
+  message: ready to deploy?

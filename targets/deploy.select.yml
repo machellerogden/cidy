@@ -1,15 +1,15 @@
 kind: prompt
 type: config
 spec:
-  - name: refspec
-    type: list
-    message: what refspec do you want to deploy?
-    default: master
-    choices:
-        - master
-        - tag
-        - name: working directory
-          value: HEAD
-  - name: tag
-    message: please enter the git tag for the commit you wish to deploy.
-    when: refspec == "tag"
+- name: refspec
+  type: list
+  message: what refspec do you want to deploy?
+  default: master
+  choices:
+  - master
+  - tag
+  - name: working directory
+    value: HEAD
+- name: tag
+  message: please enter the git tag for the commit you wish to deploy.
+  when: refspec == "tag"

@@ -1,0 +1,12 @@
+kind: shell
+spec:
+- mktemp
+- name: d
+  argType: flag
+  type: confirm
+- name: t
+  argType: flag
+  derived: true
+  template: '/tmp/${name}.XXXXXXXXXXXX'
+- name: name
+  argType: variable

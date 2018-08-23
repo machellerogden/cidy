@@ -4,5 +4,5 @@
 const Targets = require('targets');
 const targets = Targets.load('./targets/**');
 
-Targets({ targets });
+Targets({ name: 'cidy', targets });
 

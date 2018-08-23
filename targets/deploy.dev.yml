@@ -1,4 +1,4 @@
 kind: composition
 spec:
-  - '@rebind/dev'
-  - deploy
+- '@config.dev'
+- deploy

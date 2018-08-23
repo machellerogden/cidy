@@ -1,107 +1,107 @@
 kind: shell
 spec:
-  - kubectl
-  - apply
+- kubectl
+- apply
 # common k8s options - need to centralize these
-  - name: alsologtostderr
-    type: option
-    default: false
-    optional: true
-  - name: certificate-authority
-    type: option
-    default: ''
-    optional: true
-  - name: client-certificate
-    type: option
-    default: ''
-    optional: true
-  - name: client-key
-    type: option
-    default: ''
-    optional: true
-  - name: cluster
-    type: option
-    default: ''
-    optional: true
-  - name: context
-    type: option
-    default: ''
-    optional: true
-  - name: insecure-skip-tls-verify
-    type: option
-    default: false
-    optional: true
-  - name: kubeconfig
-    type: option
-    default: ''
-    optional: true
-  - name: log-backtrace-at=
-    type: option
-    optional: true
-  - name: log-dir
-    type: option
-    default: ''
-    optional: true
-  - name: log-flush-frequency=5s
-    type: option
-    optional: true
-  - name: logtostderr
-    type: option
-    default: true
-    optional: true
-  - name: match-server-version
-    type: option
-    default: false
-    optional: true
-  - name: namespace
-    type: option
-    default: ''
-    optional: true
-  - name: password
-    type: option
-    default: ''
-    optional: true
-  - name: server
-    type: option
-    default: ''
-    optional: true
-  - name: stderrthreshold
-    type: option
-    default: 2
-    optional: true
-  - name: token
-    type: option
-    default: ''
-    optional: true
-  - name: user
-    type: option
-    default: ''
-    optional: true
-  - name: username
-    type: option
-    default: ''
-    optional: true
-  - name: v
-    type: option
-    default: 0
-    optional: true
-  - name: vmodule
-    type: option
-    optional: true
+- name: alsologtostderr
+  type: option
+  default: false
+  optional: true
+- name: certificate-authority
+  type: option
+  default: ''
+  optional: true
+- name: client-certificate
+  type: option
+  default: ''
+  optional: true
+- name: client-key
+  type: option
+  default: ''
+  optional: true
+- name: cluster
+  type: option
+  default: ''
+  optional: true
+- name: context
+  type: option
+  default: ''
+  optional: true
+- name: insecure-skip-tls-verify
+  type: option
+  default: false
+  optional: true
+- name: kubeconfig
+  type: option
+  default: ''
+  optional: true
+- name: log-backtrace-at=
+  type: option
+  optional: true
+- name: log-dir
+  type: option
+  default: ''
+  optional: true
+- name: log-flush-frequency=5s
+  type: option
+  optional: true
+- name: logtostderr
+  type: option
+  default: true
+  optional: true
+- name: match-server-version
+  type: option
+  default: false
+  optional: true
+- name: namespace
+  type: option
+  default: ''
+  optional: true
+- name: password
+  type: option
+  default: ''
+  optional: true
+- name: server
+  type: option
+  default: ''
+  optional: true
+- name: stderrthreshold
+  type: option
+  default: 2
+  optional: true
+- name: token
+  type: option
+  default: ''
+  optional: true
+- name: user
+  type: option
+  default: ''
+  optional: true
+- name: username
+  type: option
+  default: ''
+  optional: true
+- name: v
+  type: option
+  default: 0
+  optional: true
+- name: vmodule
+  type: option
+  optional: true
 # apply specific options
-  - name: filename
-    type: option
-  - name: output
-    type: option
-    optional: true
-  - name: record
-    type: option
-    default: false
-    optional: true
-  - name: schema-cache-dir
-    type: option
-    optional: true
-  - name: validate
-    type: option
-    default: true
-    optional: true
+- name: filename
+  type: option
+- name: output
+  type: option
+  optional: true
+- name: record
+  type: option
+  default: false
+  optional: true
+- name: schema-cache-dir
+  type: option
+  optional: true
+- name: validate
+  type: option
+  default: true
+  optional: true

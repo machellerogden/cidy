@@ -1,0 +1,15 @@
+kind: composition
+spec:
+- uname
+- kind: composition
+  predicates:
+  - result.uname == "Darwin"
+  spec:
+  - mktemp.osx
+  - '@bind/result.mktemp.osx::result.mktemp'
+- kind: composition
+  predicates:
+  - result.uname != "Darwin"
+  spec:
+  - mktemp.linux
+  - '@bind/result.mktemp.linux::result.mktemp'
