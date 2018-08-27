@@ -1,5 +1,5 @@
 kind: prompt
-type: target
+type: result
 spec:
 - name: ready
   type: confirm
