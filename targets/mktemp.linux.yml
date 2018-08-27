@@ -4,6 +4,7 @@ spec:
 - name: d
   argType: flag
   type: confirm
+  optional: true
 - name: t
   argType: flag
   derived: true

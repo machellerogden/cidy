@@ -1,0 +1,9 @@
+kind: composition
+config:
+  rm:
+    f: true
+    r: true
+spec:
+- '@result.mktemp::config.rm.path'
+- '@prompts/off'
+- '@when/result.mktemp::rm'

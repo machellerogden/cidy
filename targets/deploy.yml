@@ -7,7 +7,7 @@ config:
     depth: 1
     single-branch: true
 spec:
-- '@bind/config.name::config.docker.name'
+- '@config.name::config.docker.name'
 - deploy.select
 - kind: composition
   predicates:
@@ -25,3 +25,5 @@ spec:
 - deploy.confirm
 - '@proceed-when/result.deploy.confirm.ready'
 - docker.build
+- '@log/cleaning up...'
+- cleanup

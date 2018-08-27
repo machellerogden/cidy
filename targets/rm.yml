@@ -1,0 +1,15 @@
+kind: shell
+spec:
+- rm
+- name: r
+  message: recursive
+  type: confirm
+  argType: flag
+  optional: true
+- name: f
+  message: force
+  type: confirm
+  argType: flag
+  optional: true
+- name: path
+  argType: value
