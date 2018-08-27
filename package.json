@@ -1,6 +1,6 @@
 {
     "name": "cidy",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "CI/CD Multi-Tool",
     "main": "index.js",
     "bin": "./index.js",
