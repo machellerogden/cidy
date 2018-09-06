@@ -2,6 +2,7 @@ kind: composition
 config:
   docker:
     version: latest
+    context: .
   git:
     short: 12
     depth: 1
