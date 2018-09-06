@@ -1,6 +1,9 @@
 kind: composition
 spec:
-- uname
+- kind: shell
+  alias: uname
+  spec:
+  - uname
 - kind: composition
   predicates:
   - result.uname == "Darwin"
