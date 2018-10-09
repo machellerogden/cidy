@@ -1,7 +1,6 @@
 kind: shell
 spec:
 - kubectl
-- apply
 # common k8s options - need to centralize these
 - name: alsologtostderr
   type: option
@@ -89,6 +88,7 @@ spec:
   type: option
   optional: true
 # apply specific options
+- apply
 - name: filename
   type: option
 - name: output

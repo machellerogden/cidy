@@ -22,7 +22,7 @@
     "author": "Mac Heller-Ogden",
     "license": "MIT",
     "dependencies": {
-        "targets": "^1.4.2",
+        "targets": "^1.6.2",
         "tmp": "0.0.33"
     }
 }
