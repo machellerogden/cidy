@@ -92,106 +92,58 @@ spec:
   argType: option
   optional: true
 # apply specific options
-- get
-- name: all-namespaces
-  argType: option
-  default: false
-  optional: true
+- create
 - name: allow-missing-template-keys
   argType: option
   default: true
   optional: true
-- name: chunk-size
-  argType: option
-  default: 500
-  optional: true
-- name: export
+- name: dry-run
   argType: option
   default: false
   optional: true
-- name: field-selector
+- name: edit
   argType: option
+  default: false
   optional: true
 - name: filename
   argType: option
-  optional: true
-- name: ignore-not-found
-  argType: option
-  default: false
-  optional: true
-- name: include-uninitialized
-  argType: option
-  default: false
-  optional: true
-- name: label-columns
-  argType: option
   default: '[]'
   optional: true
-- name: no-headers
+- name: output
   argType: option
-  default: false
   optional: true
 - name: raw
   argType: option
   optional: true
+- name: record
+  argType: option
+  default: false
+  optional: true
 - name: recursive
+  argType: option
+  default: false
+  optional: true
+- name: save-config
   argType: option
   default: false
   optional: true
 - name: selector
   argType: option
   optional: true
-- name: server-print
-  argType: option
-  default: true
-  optional: true
-- name: show-all
-  argType: option
-  default: true
-  optional: true
-- name: show-kind
-  argType: option
-  default: false
-  optional: true
-- name: show-labels
-  argType: option
-  default: false
-  optional: true
-- name: sort-by
-  argType: option
-  optional: true
 - name: template
   argType: option
   optional: true
-- name: use-openapi-print-columns
+- name: validate
+  argType: option
+  default: true
+  optional: true
+- name: windows-line-endings
   argType: option
   default: false
   optional: true
-- name: watch
+- name: validate
   argType: option
-  default: false
-  optional: true
-- name: watch-only
-  argType: option
-  default: false
-  optional: true
-- name: clusterip
-  argType: option
-  optional: true
-- name: generator
-  argType: option
-  default: service-clusterip/v1
-  optional: true
-- name: tcp
-  argType: option
-  default: '[]'
-  optional: true
-- name: external-name
-  argType: option
-  optional: true
-- name: node-port
-  argType: option
-  default: 0
+  default: true
   optional: true
 - name: resource-type
   argType: value
@@ -237,5 +189,7 @@ spec:
   - services
   - statefulsets
   - storageclasses
+  optional: true
 - name: resource-name
   argType: value
+  optional: true
