@@ -1,4 +1,4 @@
 kind: composition
 spec:
-- '@config.stage'
+- '@bind/config.stage'
 - deploy

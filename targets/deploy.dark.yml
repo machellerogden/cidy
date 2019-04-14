@@ -1,4 +1,4 @@
 kind: composition
 spec:
-- '@config.dark'
+- '@bind/config.dark'
 - deploy

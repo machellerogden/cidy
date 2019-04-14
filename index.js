@@ -2,7 +2,6 @@
 'use strict';
 
 const Targets = require('targets');
-const targets = Targets.load('./targets/**');
 
-Targets({ name: 'cidy', targets });
+Targets({ name: 'cidy', source: './targets/**' });
 

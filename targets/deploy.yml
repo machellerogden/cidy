@@ -10,20 +10,20 @@ config:
     single-branch: true
 
 spec:
-- '@config.name::config.docker.name'
+- '@bind/config.name::config.docker.name'
 - deploy.select
 - kind: composition
   predicates:
   - result.deploy.select.refspec != "HEAD"
   spec:
-  - '@result.deploy.select.refspec::config.git.refspec'
+  - '@bind/result.deploy.select.refspec::config.git.refspec'
   - git.rev-parse
-  - '@result.git.rev-parse::config.docker.version'
-  - '@result.deploy.select.refspec::config.git.branch'
-  - '@config.name::config.mktemp.name'
+  - '@bind/result.git.rev-parse::config.docker.version'
+  - '@bind/result.deploy.select.refspec::config.git.branch'
+  - '@bind/config.name::config.mktemp.name'
   - mktemp
-  - '@result.mktemp::config.git.directory'
-  - '@result.mktemp::config.docker.context'
+  - '@bind/result.mktemp::config.git.directory'
+  - '@bind/result.mktemp::config.docker.context'
   - git.clone
 - deploy.confirm
 - '@proceed-when/result.deploy.confirm.ready'

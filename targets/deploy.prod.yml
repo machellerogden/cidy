@@ -1,4 +1,4 @@
 kind: composition
 spec:
-- '@config.prod'
+- '@bind/config.prod'
 - deploy
